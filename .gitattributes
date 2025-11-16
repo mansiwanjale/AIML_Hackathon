@@ -6,3 +6,6 @@ models/*.joblib filter=lfs diff=lfs merge=lfs -text
 models/*.csv filter=lfs diff=lfs merge=lfs -text
 models/*.png filter=lfs diff=lfs merge=lfs -text
 models_advanced/* filter=lfs diff=lfs merge=lfs -text
+models/**/*.joblib filter=lfs diff=lfs merge=lfs -text
+models/**/*.csv filter=lfs diff=lfs merge=lfs -text
+models/**/*.png filter=lfs diff=lfs merge=lfs -text
