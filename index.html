@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEDx Speaker Intelligence Platform</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Color Scheme: Red & Black */
+        :root {
+            --primary-red: #e50914;
+            --dark-red: #b20710;
+            --light-red: #ff1a1a;
+            --bg-black: #0a0a0a;
+            --bg-dark: #141414;
+            --bg-card: #1a1a1a;
+            --text-white: #ffffff;
+            --text-gray: #b3b3b3;
+            --border-gray: #333333;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: var(--bg-dark);
+            border-bottom: 2px solid var(--primary-red);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(229, 9, 20, 0.1);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-white);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--primary-red);
+            color: var(--text-white);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, var(--bg-black) 0%, var(--bg-dark) 100%);
+            border-bottom: 3px solid var(--primary-red);
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--text-white), var(--primary-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            margin-bottom: 2rem;
+        }
+
+        /* Search Bar */
+        .search-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            background: var(--bg-card);
+            border: 2px solid var(--border-gray);
+            border-radius: 50px;
+            color: var(--text-white);
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-red);
+            box-shadow: 0 0 20px rgba(229, 9, 20, 0.3);
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 2px solid var(--primary-red);
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .search-result-item {
+            padding: 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-gray);
+            transition: all 0.2s;
+        }
+
+        .search-result-item:hover {
+            background: var(--primary-red);
+        }
+
+        /* Category Cards */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .category-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-gray);
+            border-radius: 12px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary-red);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .category-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary-red);
+            box-shadow: 0 8px 24px rgba(229, 9, 20, 0.3);
+        }
+
+        .category-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .category-id {
+            display: inline-block;
+            background: var(--primary-red);
+            color: var(--text-white);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .category-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-white);
+        }
+
+        .category-type {
+            color: var(--primary-red);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .category-desc {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .category-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-gray);
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-red);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: var(--primary-red);
+            color: var(--text-white);
+        }
+
+        .btn-primary:hover {
+            background: var(--dark-red);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(229, 9, 20, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-red);
+            border: 2px solid var(--primary-red);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-red);
+            color: var(--text-white);
+        }
+
+        /* Speaker Cards */
+        .speakers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .speaker-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-gray);
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .speaker-card:hover {
+            border-color: var(--primary-red);
+            transform: translateY(-4px);
+        }
+
+        .speaker-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-white);
+        }
+
+        .speaker-occupation {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .speaker-stats {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-gray);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 2rem;
+        }
+
+        .modal {
+            background: var(--bg-dark);
+            border: 2px solid var(--primary-red);
+            border-radius: 12px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            padding: 2rem;
+            border-bottom: 2px solid var(--primary-red);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: var(--primary-red);
+            border: none;
+            color: var(--text-white);
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: var(--dark-red);
+            transform: rotate(90deg);
+        }
+
+        .modal-content {
+            padding: 2rem;
+        }
+
+        /* Talk Cards */
+        .talk-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .talk-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-white);
+        }
+
+        .talk-desc {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .talk-link {
+            display: inline-block;
+            color: var(--primary-red);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--primary-red);
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .talk-link:hover {
+            background: var(--primary-red);
+            color: var(--text-white);
+        }
+
+        /* Analyzer Form */
+        .analyzer-form {
+            background: var(--bg-card);
+            border: 2px solid var(--border-gray);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-white);
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            background: var(--bg-dark);
+            border: 2px solid var(--border-gray);
+            border-radius: 8px;
+            color: var(--text-white);
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-red);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Results Panel */
+        .results-panel {
+            background: var(--bg-card);
+            border: 2px solid var(--primary-red);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .results-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .confidence-bar {
+            height: 40px;
+            background: var(--bg-dark);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--dark-red), var(--primary-red), var(--light-red));
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .keywords-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .keyword-tag {
+            background: var(--primary-red);
+            color: var(--text-white);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: var(--text-gray);
+        }
+
+        .error {
+            background: rgba(229, 9, 20, 0.1);
+            border: 2px solid var(--primary-red);
+            border-radius: 8px;
+            padding: 1rem;
+            color: var(--primary-red);
+            margin: 1rem 0;
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-white);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+            
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // API Configuration
+        const API_BASE_URL = 'http://localhost:5000/api';
+
+        // Main App Component
+        function App() {
+            const [currentPage, setCurrentPage] = useState('home');
+            const [categories, setCategories] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [selectedCategory, setSelectedCategory] = useState(null);
+            const [selectedSpeaker, setSelectedSpeaker] = useState(null);
+            const [searchQuery, setSearchQuery] = useState('');
+            const [searchResults, setSearchResults] = useState([]);
+
+            // Fetch all categories on mount
+            useEffect(() => {
+                fetchCategories();
+            }, []);
+
+            const fetchCategories = async () => {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/categories`);
+                    const data = await response.json();
+                    setCategories(data);
+                    setLoading(false);
+                } catch (error) {
+                    console.error('Error fetching categories:', error);
+                    setLoading(false);
+                }
+            };
+
+            const handleSearch = async (query) => {
+                setSearchQuery(query);
+                if (query.length < 2) {
+                    setSearchResults([]);
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/search?q=${encodeURIComponent(query)}`);
+                    const data = await response.json();
+                    setSearchResults(data);
+                } catch (error) {
+                    console.error('Error searching:', error);
+                }
+            };
+
+            const handleCategoryClick = async (categoryId) => {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/categories/${categoryId}`);
+                    const data = await response.json();
+                    setSelectedCategory(data);
+                    setCurrentPage('category-detail');
+                } catch (error) {
+                    console.error('Error fetching category detail:', error);
+                }
+            };
+
+            const handleSpeakerClick = async (speakerName) => {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/speakers/${encodeURIComponent(speakerName)}`);
+                    const data = await response.json();
+                    setSelectedSpeaker(data);
+                } catch (error) {
+                    console.error('Error fetching speaker:', error);
+                }
+            };
+
+            return (
+                <div>
+                    <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+                    
+                    {currentPage === 'home' && (
+                        <HomePage 
+                            categories={categories}
+                            loading={loading}
+                            searchQuery={searchQuery}
+                            searchResults={searchResults}
+                            onSearch={handleSearch}
+                            onCategoryClick={handleCategoryClick}
+                            setCurrentPage={setCurrentPage}
+                        />
+                    )}
+                    
+                    {currentPage === 'all-categories' && (
+                        <AllCategoriesPage 
+                            categories={categories}
+                            loading={loading}
+                            onCategoryClick={handleCategoryClick}
+                        />
+                    )}
+                    
+                    {currentPage === 'category-detail' && selectedCategory && (
+                        <CategoryDetailPage 
+                            category={selectedCategory}
+                            onSpeakerClick={handleSpeakerClick}
+                            onBack={() => setCurrentPage('all-categories')}
+                        />
+                    )}
+                    
+                    {currentPage === 'analyzer' && (
+                        <AnalyzerPage />
+                    )}
+
+                    {selectedSpeaker && (
+                        <SpeakerModal 
+                            speaker={selectedSpeaker}
+                            onClose={() => setSelectedSpeaker(null)}
+                        />
+                    )}
+                </div>
+            );
+        }
+
+        // Navbar Component
+        function Navbar({ currentPage, setCurrentPage }) {
+            return (
+                <nav className="navbar">
+                    <div className="logo">TEDx Intelligence</div>
+                    <ul className="nav-links">
+                        <li>
+                            <a 
+                                className={`nav-link ${currentPage === 'home' ? 'active' : ''}`}
+                                onClick={() => setCurrentPage('home')}
+                            >
+                                Home
+                            </a>
+                        </li>
+                        <li>
+                            <a 
+                                className={`nav-link ${currentPage === 'all-categories' ? 'active' : ''}`}
+                                onClick={() => setCurrentPage('all-categories')}
+                            >
+                                Categories
+                            </a>
+                        </li>
+                        <li>
+                            <a 
+                                className={`nav-link ${currentPage === 'analyzer' ? 'active' : ''}`}
+                                onClick={() => setCurrentPage('analyzer')}
+                            >
+                                Analyzer
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            );
+        }
+
+        // Home Page Component
+        function HomePage({ categories, loading, searchQuery, searchResults, onSearch, onCategoryClick, setCurrentPage }) {
+            const featuredCategories = categories.slice(0, 6);
+
+            return (
+                <div>
+                    <div className="hero">
+                        <h1 className="hero-title">Discover Your Speaking Category</h1>
+                        <p className="hero-subtitle">
+                            Explore 25+ speaker categories powered by machine learning
+                        </p>
+
+                        <div className="search-container">
+                            <input
+                                type="text"
+                                className="search-input"
+                                placeholder="Search categories..."
+                                value={searchQuery}
+                                onChange={(e) => onSearch(e.target.value)}
+                            />
+                            {searchResults.length > 0 && (
+                                <div className="search-results">
+                                    {searchResults.map(result => (
+                                        <div
+                                            key={result.id}
+                                            className="search-result-item"
+                                            onClick={() => {
+                                                onCategoryClick(result.id);
+                                                onSearch('');
+                                            }}
+                                        >
+                                            <div style={{ fontWeight: 600 }}>{result.name}</div>
+                                            <div style={{ fontSize: '0.85rem', color: 'var(--text-gray)' }}>
+                                                {result.category} â€¢ {result.speaker_count} speakers
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="container">
+                        <div className="section-header">
+                            <h2 className="section-title">Featured Categories</h2>
+                            <button 
+                                className="btn btn-primary"
+                                onClick={() => setCurrentPage('all-categories')}
+                            >
+                                View All Categories
+                            </button>
+                        </div>
+
+                        {loading ? (
+                            <div className="loading">Loading categories...</div>
+                        ) : (
+                            <div className="categories-grid">
+                                {featuredCategories.map(category => (
+                                    <CategoryCard 
+                                        key={category.id}
+                                        category={category}
+                                        onClick={() => onCategoryClick(category.id)}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        // All Categories Page
+        function AllCategoriesPage({ categories, loading, onCategoryClick }) {
+            return (
+                <div className="container">
+                    <div className="section-header">
+                        <h2 className="section-title">All Categories ({categories.length})</h2>
+                    </div>
+
+                    {loading ? (
+                        <div className="loading">Loading categories...</div>
+                    ) : (
+                        <div className="categories-grid">
+                            {categories.map(category => (
+                                <CategoryCard 
+                                    key={category.id}
+                                    category={category}
+                                    onClick={() => onCategoryClick(category.id)}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Category Card Component
+        function CategoryCard({ category, onClick }) {
+            return (
+                <div className="category-card" onClick={onClick}>
+                    <span className="category-id">#{category.id}</span>
+                    <h3 className="category-name">{category.name}</h3>
+                    <div className="category-type">{category.category}</div>
+                    <p className="category-desc">{category.description}</p>
+                    <div className="category-stats">
+                        <div className="stat">
+                            <span className="stat-value">{category.speaker_count}</span>
+                            <span className="stat-label">Speakers</span>
+                        </div>
+                    </div>
+                    {category.keywords && (
+                        <div className="keywords-container" style={{ marginTop: '1rem' }}>
+                            {category.keywords.slice(0, 4).map((keyword, idx) => (
+                                <span key={idx} className="keyword-tag">{keyword}</span>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Category Detail Page
+        function CategoryDetailPage({ category, onSpeakerClick, onBack }) {
+            return (
+                <div className="container">
+                    <button className="btn btn-secondary" onClick={onBack} style={{ marginBottom: '2rem' }}>
+                        â† Back to Categories
+                    </button>
+
+                    <div style={{ marginBottom: '3rem' }}>
+                        <span className="category-id">#{category.id}</span>
+                        <h1 className="section-title" style={{ marginTop: '1rem' }}>
+                            {category.name}
+                        </h1>
+                        <div className="category-type" style={{ fontSize: '1.2rem', marginTop: '0.5rem' }}>
+                            {category.category}
+                        </div>
+                        <p style={{ color: 'var(--text-gray)', fontSize: '1.1rem', marginTop: '1rem', lineHeight: 1.8 }}>
+                            {category.description}
+                        </p>
+
+                        <div className="category-stats" style={{ marginTop: '2rem' }}>
+                            <div className="stat">
+                                <span className="stat-value">{category.speaker_count}</span>
+                                <span className="stat-label">Total Speakers</span>
+                            </div>
+                            <div className="stat">
+                                <span className="stat-value">{category.total_talks}</span>
+                                <span className="stat-label">Total Talks</span>
+                            </div>
+                        </div>
+
+                        <div style={{ marginTop: '2rem' }}>
+                            <h3 style={{ marginBottom: '1rem' }}>Top Keywords</h3>
+                            <div className="keywords-container">
+                                {category.keywords.map((keyword, idx) => (
+                                    <span key={idx} className="keyword-tag">{keyword}</span>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 className="section-title">Speakers in this Category</h2>
+                    <div className="speakers-grid">
+                        {category.all_speakers.map((speakerName, idx) => (
+                            <div 
+                                key={idx}
+                                className="speaker-card"
+                                onClick={() => onSpeakerClick(speakerName)}
+                            >
+                                <div className="speaker-name">{speakerName}</div>
+                                <div className="speaker-stats">
+                                    <div className="stat">
+                                        <span className="stat-value">
+                                            {category.speaker_talk_counts[speakerName] || 1}
+                                        </span>
+                                        <span className="stat-label">Talks</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        // Speaker Modal
+        function SpeakerModal({ speaker, onClose }) {
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2 className="modal-title">{speaker.speaker_name}</h2>
+                            <button className="modal-close" onClick={onClose}>Ã—</button>
+                        </div>
+                        <div className="modal-content">
+                            <div style={{ marginBottom: '2rem' }}>
+                                <div style={{ color: 'var(--primary-red)', fontWeight: 600, marginBottom: '0.5rem' }}>
+                                    {speaker.occupation}
+                                </div>
+                                <div style={{ color: 'var(--text-gray)' }}>
+                                    Category: {speaker.category_name}
+                                </div>
+                            </div>
+
+                            <div className="category-stats" style={{ marginBottom: '2rem' }}>
+                                <div className="stat">
+                                    <span className="stat-value">{speaker.total_talks}</span>
+                                    <span className="stat-label">Total Talks</span>
+                                </div>
+                                <div className="stat">
+                                    <span className="stat-value">{(speaker.total_views / 1000000).toFixed(1)}M</span>
+                                    <span className="stat-label">Total Views</span>
+                                </div>
+                            </div>
+
+                            <h3 style={{ marginBottom: '1rem' }}>Talks by {speaker.speaker_name}</h3>
+                            {speaker.talks.map((talk, idx) => (
+                                <div key={idx} className="talk-card">
+                                    <div className="talk-title">{talk.title}</div>
+                                    <div className="talk-desc">{talk.description}</div>
+                                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1rem' }}>
+                                        <span style={{ color: 'var(--text-gray)', fontSize: '0.85rem' }}>
+                                            {talk.event} â€¢ {Math.floor(talk.duration / 60)} min â€¢ {(talk.views / 1000000).toFixed(1)}M views
+                                        </span>
+                                    </div>
+                                    {talk.url && (
+                                        <a href={talk.url} target="_blank" rel="noopener noreferrer" className="talk-link">
+                                            Watch Talk â†’
+                                        </a>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Analyzer Page
+        function AnalyzerPage() {
+            const [formData, setFormData] = useState({
+                name: '',
+                occupation: '',
+                title: '',
+                description: '',
+                tags: ''
+            });
+            const [result, setResult] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState('');
+
+            const handleChange = (e) => {
+                setFormData({
+                    ...formData,
+                    [e.target.name]: e.target.value
+                });
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                setError('');
+                setResult(null);
+
+                // Check if at least one field is filled
+                const hasInput = Object.values(formData).some(value => value.trim() !== '');
+                if (!hasInput) {
+                    setError('Please fill at least one field');
+                    setLoading(false);
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/analyze`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Analysis failed');
+                    }
+
+                    const data = await response.json();
+                    setResult(data);
+                } catch (err) {
+                    setError('Failed to analyze. Please check your backend connection.');
+                    console.error(err);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const handleClear = () => {
+                setFormData({
+                    name: '',
+                    occupation: '',
+                    title: '',
+                    description: '',
+                    tags: ''
+                });
+                setResult(null);
+                setError('');
+            };
+
+            return (
+                <div className="container">
+                    <div className="hero" style={{ padding: '3rem 2rem' }}>
+                        <h1 className="hero-title" style={{ fontSize: '2.5rem' }}>Speaker Profile Analyzer</h1>
+                        <p className="hero-subtitle">
+                            Enter speaker information to predict their category using AI
+                        </p>
+                    </div>
+
+                    <form className="analyzer-form" onSubmit={handleSubmit}>
+                        <div className="form-group">
+                            <label className="form-label">Speaker Name (Optional)</label>
+                            <input
+                                type="text"
+                                name="name"
+                                className="form-input"
+                                placeholder="e.g., Jane Doe"
+                                value={formData.name}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">Occupation</label>
+                            <input
+                                type="text"
+                                name="occupation"
+                                className="form-input"
+                                placeholder="e.g., Neuroscientist, Entrepreneur, Artist"
+                                value={formData.occupation}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">Talk Title</label>
+                            <input
+                                type="text"
+                                name="title"
+                                className="form-input"
+                                placeholder="e.g., The Future of AI in Healthcare"
+                                value={formData.title}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">Talk Description</label>
+                            <textarea
+                                name="description"
+                                className="form-textarea"
+                                placeholder="Describe the talk topic, themes, and key messages..."
+                                value={formData.description}
+                                onChange={handleChange}
+                            ></textarea>
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">Tags (comma-separated)</label>
+                            <input
+                                type="text"
+                                name="tags"
+                                className="form-input"
+                                placeholder="e.g., AI, healthcare, technology, innovation"
+                                value={formData.tags}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        {error && (
+                            <div className="error">{error}</div>
+                        )}
+
+                        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                            <button type="submit" className="btn btn-primary" disabled={loading}>
+                                {loading ? 'Analyzing...' : 'Analyze Profile'}
+                            </button>
+                            <button type="button" className="btn btn-secondary" onClick={handleClear}>
+                                Clear
+                            </button>
+                        </div>
+                    </form>
+
+                    {result && (
+                        <div className="results-panel">
+                            <div className="results-header">
+                                âœ“ Analysis Complete
+                            </div>
+
+                            <div style={{ marginBottom: '2rem' }}>
+                                <h3 style={{ fontSize: '1.3rem', marginBottom: '0.5rem' }}>
+                                    Predicted Category
+                                </h3>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                                    <span className="category-id">#{result.predicted_category.id}</span>
+                                    <span style={{ fontSize: '1.5rem', fontWeight: 700 }}>
+                                        {result.predicted_category.name}
+                                    </span>
+                                </div>
+                                <div className="category-type" style={{ fontSize: '1rem' }}>
+                                    {result.predicted_category.category}
+                                </div>
+                                <p style={{ color: 'var(--text-gray)', marginTop: '1rem', lineHeight: 1.6 }}>
+                                    {result.predicted_category.description}
+                                </p>
+                            </div>
+
+                            <div style={{ marginBottom: '2rem' }}>
+                                <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>
+                                    Confidence Score
+                                </h3>
+                                <div className="confidence-bar">
+                                    <div 
+                                        className="confidence-fill" 
+                                        style={{ width: `${result.confidence}%` }}
+                                    >
+                                        {result.confidence.toFixed(1)}%
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style={{ marginBottom: '2rem' }}>
+                                <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>
+                                    Category Stats
+                                </h3>
+                                <div className="category-stats">
+                                    <div className="stat">
+                                        <span className="stat-value">{result.cluster_size}</span>
+                                        <span className="stat-label">Speakers</span>
+                                    </div>
+                                    <div className="stat">
+                                        <span className="stat-value">{result.distance.toFixed(3)}</span>
+                                        <span className="stat-label">Distance</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style={{ marginBottom: '2rem' }}>
+                                <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>
+                                    Key Topics in this Category
+                                </h3>
+                                <div className="keywords-container">
+                                    {result.keywords.map((keyword, idx) => (
+                                        <span key={idx} className="keyword-tag">{keyword}</span>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div style={{ marginBottom: '2rem' }}>
+                                <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>
+                                    Similar Speakers
+                                </h3>
+                                {result.similar_speakers.map((speaker, idx) => (
+                                    <div key={idx} style={{ 
+                                        padding: '0.5rem 0', 
+                                        color: 'var(--text-gray)',
+                                        borderBottom: idx < result.similar_speakers.length - 1 ? '1px solid var(--border-gray)' : 'none'
+                                    }}>
+                                        â€¢ {speaker}
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div>
+                                <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>
+                                    Alternative Category Matches
+                                </h3>
+                                {result.alternative_matches.slice(1, 4).map((match, idx) => (
+                                    <div key={idx} style={{ 
+                                        background: 'var(--bg-dark)',
+                                        padding: '1rem',
+                                        borderRadius: '8px',
+                                        marginBottom: '0.5rem',
+                                        border: '1px solid var(--border-gray)'
+                                    }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div>
+                                                <span className="category-id" style={{ fontSize: '0.75rem' }}>
+                                                    #{match.id}
+                                                </span>
+                                                <span style={{ marginLeft: '0.5rem', fontWeight: 600 }}>
+                                                    {match.name}
+                                                </span>
+                                                <div style={{ fontSize: '0.85rem', color: 'var(--text-gray)', marginTop: '0.25rem' }}>
+                                                    {match.category}
+                                                </div>
+                                            </div>
+                                            <div style={{ textAlign: 'right' }}>
+                                                <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--primary-red)' }}>
+                                                    {(match.confidence * 100).toFixed(1)}%
+                                                </div>
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-gray)' }}>
+                                                    confidence
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Render App
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
